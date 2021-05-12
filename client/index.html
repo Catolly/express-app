@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>To-do app</title>
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+	<div id="todo-app-wrap">
+		<div id="todo-app">
+			<h1>TODOLIST</h1>
+
+			<template v-if="token">
+				<h2>Hello, {{username}}!</h2>
+				<button class="logout" @click="logout">Log out</button>
+				<header>
+					<input
+					v-show="todos.length"
+					v-model="allDone"
+					type="checkbox" 
+					class="all-done"
+					id="all-done">
+					<label
+					:class="{'cloak': !todos.length, 'done': allDone}"
+					class="all-done-label" 
+					for="all-done"></label>
+					<input
+					v-model="newTodo"
+					@keyup.enter="create"
+					type="text" 
+					class="new-todo"
+					placeholder="What needs to be done?">
+				</header>
+				<section class="main">
+					<ul>
+						<li
+						v-for="(todo, index) in filtered"
+						:key="todo._id || index"
+						:class="{'done': todo.completed}"
+						class="todo">
+							<input
+							v-show="editingTodo!=todo"
+							v-model="todo.completed"
+							type="checkbox" 
+							class="check"
+							:id="todo._id || index">
+							<label 
+							v-show="editingTodo!=todo"
+							:for="todo._id || index" 
+							class="check-label"></label>
+							<label 
+							v-show="editingTodo!=todo"
+							@dblclick="editTodo(todo)"
+							class="todo-text">{{todo.text}}</label>
+							<button 
+							v-show="editingTodo!=todo"
+							@click="destroy(todo)"
+							class="destroy"></button>
+							<input
+							v-show="editingTodo==todo"
+							v-model="todo.text"
+							v-todo-focus="editingTodo==todo"
+							@blur="doneEdit(todo)"
+							@keyup.enter="doneEdit(todo)"
+							@keyup.esc="cancelEdit(todo)"
+							type="text" 
+							class="edit">
+						</li>
+					</ul>
+					<footer class="footer">
+						<span class="items-left">{{remaining}} item{{remaining === 1 ? '' : 's'}} left</span>
+						<ul class="filters">
+							<li>
+								<button
+								@click="visibility='all'"
+								:class="{'selected': visibility==='all'}"
+								class="filter">All</button>
+							</li>
+							<li>
+								<button
+								@click="visibility='active'"
+								:class="{'selected': visibility==='active'}"
+								class="filter">Active</button>
+							</li>
+							<li>
+								<button
+								@click="visibility='completed'"
+								:class="{'selected': visibility==='completed'}"
+								class="filter">Completed</button>
+							</li>
+						</ul>
+						<button 
+						@click="clear"
+						class="clear">Clear completed</button>
+					</footer>
+				</section>
+			</div>
+		</template>
+
+		<template v-else>
+			<!-- auth form -->
+			<form 
+			v-if="formType === 'auth'"
+			@submit.prevent="auth" 
+			class="auth">
+				<h2>Log in</h2>
+				<input
+				v-model="username"
+				type="text" 
+				class="new-todo"
+				placeholder="Username">
+				<input
+				v-model="password"
+				type="password" 
+				class="new-todo"
+				placeholder="Password">
+				<div class="btns">
+					<button>
+						Log in
+					</button>
+					<button @click.prevent="formType='signup'">
+						Sign up
+					</button>
+				</div>
+			</form>
+
+			<!-- signup form -->
+			<form 
+			v-if="formType === 'signup'"
+			@submit.prevent="signup" 
+			class="signup">
+				<h2>Sign up</h2>
+				<input
+				v-model="username"
+				type="text" 
+				class="new-todo"
+				placeholder="Username">
+				<input
+				v-model="password"
+				type="password" 
+				class="new-todo"
+				placeholder="Password">
+				<div class="btns">
+					<button>
+						Sign up
+					</button>
+					<button @click.prevent="formType='auth'">
+						Log in
+					</button>
+				</div>
+			</form>
+		</template>
+
+		<footer class="info">
+			<p>Double-click to edit a todo</p>
+			<p>Written by <a href="https://vk.com/id104006211">Anatoly Sergienko</a></p>
+			<p><a href="https://github.com/ASK3T">My GitHub</a></p>
+		</footer>
+	</div>
+
+	<!-- vue -->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+	<script src='./build/js.bundle.js'></script>
+</body>
+</html>
